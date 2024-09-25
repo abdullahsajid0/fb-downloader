@@ -1,15 +1,12 @@
 import streamlit as st
 import yt_dlp
 import base64
-import os  # Importing os module to handle file operations
+import os
 
-# Function to set permanent background image
 def set_background(image_file):
-    # Read the image and convert it to base64
     with open(image_file, 'rb') as f:
         encoded_image = base64.b64encode(f.read()).decode()
     
-    # Apply the background image using CSS
     st.markdown(
         f"""
         <style>
@@ -22,7 +19,7 @@ def set_background(image_file):
         }}
         @media (max-width: 600px) {{
             .stApp {{
-                background-size: 100% auto;  /* Ensure the image fits mobile screen width */
+                background-size: 100% auto;
             }}
         }}
         </style>
@@ -30,12 +27,10 @@ def set_background(image_file):
         unsafe_allow_html=True
     )
 
-# Set the permanent background image
-set_background('background_mobile.jpg')  # Background image saved as 'background_mobile.jpg' in your project folder
+set_background('background_mobile.jpg')
 
 st.title("Abdullah Sajid's Facebook Video Downloader App")
 
-# Function to download Facebook video
 def download_facebook_video(fb_video_url, output_path='./downloaded_fb_video.mp4'):
     ydl_opts = {
         'outtmpl': output_path,
@@ -55,7 +50,6 @@ def download_facebook_video(fb_video_url, output_path='./downloaded_fb_video.mp4
     except Exception as e:
         return str(e)
 
-# Main Video Downloader Interface
 video_url = st.text_input("Enter Facebook Video URL:")
 
 if st.button("Download"):
@@ -67,3 +61,5 @@ if st.button("Download"):
                 st.download_button("Download Video", f, file_name="downloaded_fb_video.mp4")
         else:
             st.error(f"An error occurred: {output_file}")
+            if "Cannot parse data" in output_file:
+                st.warning("This may be a temporary issue with Facebook. Please try updating yt-dlp or try again later.")
