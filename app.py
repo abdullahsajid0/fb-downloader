@@ -4,6 +4,38 @@ import os
 import uuid
 from datetime import datetime
 
+
+# Function to set permanent background image
+def set_background(image_file):
+    # Read the image and convert it to base64
+    with open(image_file, 'rb') as f:
+        encoded_image = base64.b64encode(f.read()).decode()
+    
+    # Apply the background image using CSS
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/png;base64,{encoded_image}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+        @media (max-width: 600px) {{
+            .stApp {{
+                background-size: 100% auto;  /* Ensure the image fits mobile screen width */
+            }}
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# Set the permanent background image
+set_background('background_mobile.jpg')  # Background image saved as 'background_mobile.jpg' in your project folder
+
+
 def download_facebook_video(fb_video_url):
     # Generate a unique filename using timestamp or UUID
     unique_filename = f"downloaded_fb_video_{uuid.uuid4()}.mp4"
