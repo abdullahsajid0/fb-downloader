@@ -1,6 +1,7 @@
 import streamlit as st
 import yt_dlp
 import base64
+import os  # Importing os module to handle file operations
 
 # Function to set permanent background image
 def set_background(image_file):
