@@ -2,7 +2,10 @@ import streamlit as st
 import yt_dlp
 import base64
 import os
+import re
+from urllib.parse import urlparse
 
+# Function to set a permanent background image
 def set_background(image_file):
     with open(image_file, 'rb') as f:
         encoded_image = base64.b64encode(f.read()).decode()
@@ -27,39 +30,50 @@ def set_background(image_file):
         unsafe_allow_html=True
     )
 
+# Set the background
 set_background('background_mobile.jpg')
 
 st.title("Abdullah Sajid's Facebook Video Downloader App")
 
-def download_facebook_video(fb_video_url, output_path='./downloaded_fb_video.mp4'):
+# Function to download Facebook video
+def download_facebook_video(fb_video_url):
+    # Create a valid filename by replacing special characters
+    video_id = re.search(r'(?<=videos/)(\d+)', fb_video_url)
+    if video_id:
+        output_filename = f'downloaded_fb_video_{video_id.group(0)}.mp4'
+    else:
+        output_filename = 'downloaded_fb_video.mp4'
+    
     ydl_opts = {
-        'outtmpl': output_path,
+        'outtmpl': output_filename,
         'format': 'best',
         'restrictfilenames': True,
         'noplaylist': True,
     }
-    
+
     try:
-        part_file = output_path + ".part"
-        if os.path.exists(part_file):
-            os.remove(part_file)
-        
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([fb_video_url])
-        return output_path
+        return output_filename
     except Exception as e:
         return str(e)
 
+# Input field for video URL
 video_url = st.text_input("Enter Facebook Video URL:")
 
 if st.button("Download"):
     if video_url:
-        output_file = download_facebook_video(video_url)
-        if output_file.endswith('.mp4'):
-            st.success("Download completed!")
-            with open(output_file, 'rb') as f:
-                st.download_button("Download Video", f, file_name="downloaded_fb_video.mp4")
+        # Validate URL
+        parsed_url = urlparse(video_url)
+        if not (parsed_url.scheme in ['http', 'https'] and 'facebook.com' in parsed_url.netloc):
+            st.error("Please enter a valid Facebook video URL.")
         else:
-            st.error(f"An error occurred: {output_file}")
-            if "Cannot parse data" in output_file:
-                st.warning("This may be a temporary issue with Facebook. Please try updating yt-dlp or try again later.")
+            output_file = download_facebook_video(video_url)
+            if output_file.endswith('.mp4'):
+                st.success("Download completed!")
+                with open(output_file, 'rb') as f:
+                    st.download_button("Download Video", f, file_name=output_file)
+            else:
+                st.error(f"An error occurred: {output_file}")
+                if "Cannot parse data" in output_file:
+                    st.warning("This may be a temporary issue with Facebook. Please try updating yt-dlp or try again later.")
