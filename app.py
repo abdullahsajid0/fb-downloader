@@ -2,8 +2,8 @@ import streamlit as st
 import yt_dlp
 import os
 import uuid
+import base64  # You missed importing this
 from datetime import datetime
-
 
 # Function to set permanent background image
 def set_background(image_file):
@@ -32,12 +32,12 @@ def set_background(image_file):
         unsafe_allow_html=True
     )
 
-# Set the permanent background image
+# Set the permanent background image (adjust image name and location accordingly)
 set_background('background_mobile.jpg')  # Background image saved as 'background_mobile.jpg' in your project folder
 
-
+# Function to download Facebook video
 def download_facebook_video(fb_video_url):
-    # Generate a unique filename using timestamp or UUID
+    # Generate a unique filename using UUID
     unique_filename = f"downloaded_fb_video_{uuid.uuid4()}.mp4"
     
     # Set yt-dlp options with a unique output template
@@ -49,7 +49,7 @@ def download_facebook_video(fb_video_url):
     }
 
     try:
-        st.write(f"Downloading from URL: {fb_video_url}")  # Debug: Print the URL being downloaded
+        st.write(f"Downloading from URL: {fb_video_url}")
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([fb_video_url])
         return unique_filename
@@ -65,7 +65,7 @@ video_url = st.text_input("Enter Facebook Video URL:")
 # When the button is clicked, download the video
 if st.button("Download"):
     if video_url:
-        st.write(f"Attempting to download video from: {video_url}")  # Debugging URL before download
+        st.write(f"Attempting to download video from: {video_url}")
         output_file = download_facebook_video(video_url)
         if output_file.endswith('.mp4'):
             st.success(f"Download completed: {output_file}")
@@ -75,3 +75,4 @@ if st.button("Download"):
             st.error(f"An error occurred: {output_file}")
     else:
         st.error("Please provide a Facebook video URL.")
+
