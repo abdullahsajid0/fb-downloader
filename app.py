@@ -3,7 +3,6 @@ import yt_dlp
 import os
 import uuid
 import base64  # Ensure this import is present
-from datetime import datetime
 
 # Function to set a permanent background image
 def set_background(image_file):
@@ -46,7 +45,7 @@ def download_facebook_video(fb_video_url):
         'format': 'best',
         'restrictfilenames': True,
         'noplaylist': True,  # Ensure only the single video is downloaded
-        'verbose': True  # Add this line to enable verbose output
+        'verbose': True  # Enable verbose output for debugging
     }
 
     try:
@@ -54,8 +53,10 @@ def download_facebook_video(fb_video_url):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([fb_video_url])
         return unique_filename
+    except yt_dlp.utils.ExtractorError as e:
+        return f"An error occurred: {str(e)}. Please ensure the URL is accessible and try again."
     except Exception as e:
-        return f"An error occurred: {str(e)}"
+        return f"An unexpected error occurred: {str(e)}"
 
 # Streamlit UI
 st.title("Abdullah Sajid's Facebook Downloader App")
