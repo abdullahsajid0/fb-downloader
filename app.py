@@ -2,10 +2,10 @@ import streamlit as st
 import yt_dlp
 import os
 import uuid
-import base64  # You missed importing this
+import base64  # Ensure this import is present
 from datetime import datetime
 
-# Function to set permanent background image
+# Function to set a permanent background image
 def set_background(image_file):
     # Read the image and convert it to base64
     with open(image_file, 'rb') as f:
@@ -33,7 +33,7 @@ def set_background(image_file):
     )
 
 # Set the permanent background image (adjust image name and location accordingly)
-set_background('background_mobile.jpg')  # Background image saved as 'background_mobile.jpg' in your project folder
+set_background('background_mobile.jpg')  # Ensure this image is in your project folder
 
 # Function to download Facebook video
 def download_facebook_video(fb_video_url):
@@ -46,6 +46,7 @@ def download_facebook_video(fb_video_url):
         'format': 'best',
         'restrictfilenames': True,
         'noplaylist': True,  # Ensure only the single video is downloaded
+        'verbose': True  # Add this line to enable verbose output
     }
 
     try:
@@ -54,7 +55,7 @@ def download_facebook_video(fb_video_url):
             ydl.download([fb_video_url])
         return unique_filename
     except Exception as e:
-        return str(e)
+        return f"An error occurred: {str(e)}"
 
 # Streamlit UI
 st.title("Abdullah Sajid's Facebook Downloader App")
@@ -69,10 +70,10 @@ if st.button("Download"):
         output_file = download_facebook_video(video_url)
         if output_file.endswith('.mp4'):
             st.success(f"Download completed: {output_file}")
+            # Provide a download button for the downloaded video
             with open(output_file, 'rb') as f:
                 st.download_button("Download Video", f, file_name=output_file)
         else:
-            st.error(f"An error occurred: {output_file}")
+            st.error(output_file)  # Display the error message
     else:
         st.error("Please provide a Facebook video URL.")
-
